@@ -10,6 +10,16 @@ commands:
 
 
 jobs:
+  test_catch:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: return 1
+      - run:
+          name: Failed test
+          command: echo "IT failed!!!"
+          when: on_fail   
   print_hello:
     docker:
       - image: circleci/node:13.8.0
@@ -47,6 +57,9 @@ jobs:
 
 
 workflows:
+  failtest:
+    jobs:
+      - test_catch
   welcome:
     jobs:
       - print_hello

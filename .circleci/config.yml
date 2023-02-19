@@ -23,6 +23,24 @@ jobs:
       - run:
           name: "Testing ENv Variables"
           command: echo ${MY_PROJ_NAME}
+  save_hello_world_output:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: mkdir /tmp/vvk_wrksp
+      - run: echo "Hi We are updating file from job 1" > /tmp/vvk_wrksp/output.txt
+      - persist_to_workspace:
+          root: /tmp/vvk_wrksp
+          paths:
+            - output.txt
+  print_output_file:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - attach_workspace:
+          at: /tmp/vvk_wrksp
+      - run: cat /tmp/vvk_wrksp/output.txt
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -33,3 +51,9 @@ workflows:
       - print_world:
           requires:
             - print_hello
+  fileshare:
+    jobs:
+      - save_hello_world_output
+      - print_output_file:
+          requires:
+            - save_hello_world_output

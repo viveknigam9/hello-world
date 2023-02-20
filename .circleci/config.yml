@@ -53,6 +53,24 @@ jobs:
       - attach_workspace:
           at: /tmp/vvk_wrksp
       - run: cat /tmp/vvk_wrksp/output.txt
+    
+# Exercise: Smoke Testing
+  smoke_test:
+    docker:
+      - image: alpine:latest
+    steps:
+      - run: apk add --update curl
+      - run:
+          name: smoke test
+          command: |
+            URL="https://blog.udacity.com/"
+            # Test if website exists
+            if curl -s --head ${URL} 
+            then
+              return 0
+            else
+              return 1
+            fi
 
 
 workflows:
@@ -71,3 +89,7 @@ workflows:
       - print_output_file:
           requires:
             - save_hello_world_output
+            
+  smoke:
+    jobs:
+      - smoke_test
